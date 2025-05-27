@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-};
+import { Task } from "./AddTask";
 
 type EditTaskModalProps = {
   task: Task | null;

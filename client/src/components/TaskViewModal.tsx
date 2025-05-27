@@ -1,9 +1,4 @@
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-};
+import { Task } from "./AddTask";
 
 type TaskViewModalProps = {
   task: Task | null;

@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { addTask, getAllTasks } from "../service/api.service";
 
 export type Task = {
-  id: number;
+  _id: string;
   title: string;
   description: string;
   isCompleted: boolean;
@@ -21,7 +22,7 @@ export const AddTask: React.FC<AddTaskProps> = ({ setTasks }) => {
   const [description, setDescription] = useState<string>("");
   const [error, setError] = useState<ErrorState>({});
 
-  const addTask = () => {
+  const handleAddTask = async() => {
     const newError: ErrorState = {};
 
     if (title.trim().length <= 0) {
@@ -35,15 +36,10 @@ export const AddTask: React.FC<AddTaskProps> = ({ setTasks }) => {
     setError(newError);
 
     if (Object.keys(newError).length === 0) {
-      setTasks((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          title,
-          description,
-          isCompleted: false,
-        },
-      ]);
+        await addTask({title, description, isCompleted: false});
+        const updatedTasks = await getAllTasks();
+        setTasks(updatedTasks);
+
       setTitle("");
       setDescription("");
     }
@@ -75,7 +71,7 @@ export const AddTask: React.FC<AddTaskProps> = ({ setTasks }) => {
             )}
           </div>
           <div>
-            <button className="btn_add_todo" onClick={addTask}>
+            <button className="btn_add_todo" onClick={handleAddTask}>
               Add
             </button>
           </div>

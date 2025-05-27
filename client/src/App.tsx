@@ -1,10 +1,19 @@
 import "./styles.css";
 import { AddTask } from "./components/AddTask";
 import { TaskList } from "./components/TaskList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Task } from "./components/AddTask";
+import { getAllTasks } from "./service/api.service";
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const tasks = await getAllTasks();
+      setTasks(tasks);
+    };
+    fetchTasks();
+  }, []);
 
   return (
     <div className="App">

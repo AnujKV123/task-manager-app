@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { TaskViewModal } from "./TaskViewModal";
 import { EditTaskModal } from "./EditTaskModal";
-
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-};
+import { updateTaskById, getAllTasks, completeTaskById, deleteTaskById } from "../service/api.service";
+import { Task } from "./AddTask";
 
 type TaskListProps = {
   tasks: Task[];
@@ -19,22 +14,22 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
 
-  const handleDelete = (id: number) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+  const handleDelete = async(id: string) => {
+    await deleteTaskById(id);
+    const updatedTasks = await getAllTasks();
+    setTasks(updatedTasks);
   };
 
-  const handleUpdateTask = (updatedTask: Task) => {
-    setTasks((prev) =>
-      prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
+  const handleUpdateTask = async(updatedTask: Task) => {
+    await updateTaskById(updatedTask._id, updatedTask);
+    const updatedTasks = await getAllTasks();
+    setTasks(updatedTasks);
   };
 
-  const handleComplete = (id: number) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, isCompleted: true } : task
-      )
-    );
+  const handleComplete = async(id: string) => {
+    await completeTaskById(id);
+    const updatedTasks = await getAllTasks();
+    setTasks(updatedTasks);
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -74,10 +69,10 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
             <span>Actions</span>
           </div>
         </div>
-        {filteredTasks.map((task) => (
-          <div key={task.id} className="container_item_header">
+        {filteredTasks.map((task, index) => (
+          <div key={index+1} className="container_item_header">
             <div className="container_item_item_header">
-              <span>{task.id}</span>
+              <span>{index + 1}</span>
               <span title={task.title}>
                 {task.title.length > 30
                   ? task.title.slice(0, 30) + "..."
@@ -94,11 +89,11 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
                 </button>
                 <button
                   disabled={task.isCompleted}
-                  onClick={() => handleComplete(task.id)}
+                  onClick={() => handleComplete(task._id)}
                 >
                   Completed
                 </button>
-                <button onClick={() => handleDelete(task.id)}>Delete</button>
+                <button onClick={() => handleDelete(task._id)}>Delete</button>
               </div>
             </div>
           </div>
